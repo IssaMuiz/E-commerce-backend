@@ -25,7 +25,7 @@ const register = async (req, res) => {
       role: role || "customer",
     });
 
-    await user.save();
+    await newUser.save();
 
     res.status(200).json({
       success: true,

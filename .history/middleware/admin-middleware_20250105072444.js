@@ -1,8 +1,8 @@
 const adminMiddleware = (req, res, next) => {
   if (req.userInfo.role !== "admin") {
-    return res.status(403).json({
+    res.status(403).json({
       success: false,
-      message: "Access denied! Admin rights is required",
+      message: "Access denied! Admin right is required",
     });
   }
 

@@ -5,11 +5,13 @@ const addProduct = async (req, res) => {
     const { title, description, category, images, price } = req.body;
 
     const product = new Products({
-      title,
-      description,
-      category,
-      images,
-      price,
+      products: {
+        title,
+        description,
+        category,
+        images,
+        price,
+      },
     });
 
     await product.save();
@@ -30,22 +32,7 @@ const addProduct = async (req, res) => {
 
 const fetchProducts = async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 3;
-    const skip = (page - 1) / limit;
-
-    const sortBy = req.query.sortBy || "Best selling";
-    const sortOrder = req.query.sortOrder === "asc" ? 1 : -1;
-    const totalProducts = await Products.countDocuments();
-    const totalPage = Math.ceil(totalProducts / limit);
-
-    const sortObj = {};
-
-    sortObj[sortBy] = sortOrder;
-    const allProducts = await Products.find()
-      .sort(sortObj)
-      .skip(skip)
-      .limit(limit);
+    const allProducts = await Products.find({});
 
     if (allProducts.length < 0) {
       return res.status({
@@ -57,12 +44,7 @@ const fetchProducts = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Products fetched successfully!",
-      products: {
-        currentPage: page,
-        totalPage,
-        totalProducts,
-        data: allProducts,
-      },
+      products: allProducts,
     });
   } catch (error) {
     console.error("Something went wrong!", error);
@@ -74,27 +56,31 @@ const fetchProducts = async (req, res) => {
 };
 
 const updateProduct = async (req, res) => {
-  const { id } = req.params;
+  const id = req.params.id;
   const { title, description, category, images, price } = req.body;
 
   try {
-    const product = await Products.findByIdAndUpdate(
-      id,
-      { title, description, category, images, price },
-      { new: true }
-    );
+    const product = await Products.findById(id);
 
     if (!product) {
       res.status(404).json({
         success: false,
-        message: `product with this ID ${id} is not found`,
+        message: `product with this ID ${product} is not found`,
       });
     }
+
+    product.title = title || product.title;
+    product.description = description || product.description;
+    product.category = category || product.category;
+    product.images = images || product.images;
+    product.price = price || product.price;
+
+    const updatedProduct = await product.save();
 
     res.status(200).json({
       success: true,
       message: "Product updated successfully",
-      product: product,
+      product: updatedProduct,
     });
   } catch (error) {
     console.error("Something went wrong!", error);
@@ -113,14 +99,16 @@ const deleteProduct = async (req, res) => {
     if (!product) {
       res.status(404).json({
         success: false,
-        message: `product with this ${id} is not found`,
+        message: `product with this ${product} is not found`,
       });
     }
+
+    const deletedProduct = await product.save();
 
     res.status(200).json({
       sucess: true,
       message: "Product deleted successfully!",
-      product: product,
+      product: deletedProduct,
     });
   } catch (error) {
     console.error("Something went wrong!", error);

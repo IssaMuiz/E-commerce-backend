@@ -87,7 +87,7 @@ const updateProduct = async (req, res) => {
     if (!product) {
       res.status(404).json({
         success: false,
-        message: `product with this ID ${id} is not found`,
+        message: `product with this ID ${product} is not found`,
       });
     }
 
@@ -113,7 +113,7 @@ const deleteProduct = async (req, res) => {
     if (!product) {
       res.status(404).json({
         success: false,
-        message: `product with this ${id} is not found`,
+        message: `product with this ${product} is not found`,
       });
     }
 

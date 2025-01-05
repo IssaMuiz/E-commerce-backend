@@ -74,27 +74,31 @@ const fetchProducts = async (req, res) => {
 };
 
 const updateProduct = async (req, res) => {
-  const { id } = req.params;
+  const id = req.params.id;
   const { title, description, category, images, price } = req.body;
 
   try {
-    const product = await Products.findByIdAndUpdate(
-      id,
-      { title, description, category, images, price },
-      { new: true }
-    );
+    const product = await Products.findById(id);
 
     if (!product) {
       res.status(404).json({
         success: false,
-        message: `product with this ID ${id} is not found`,
+        message: `product with this ID ${product} is not found`,
       });
     }
+
+    product.title = title || product.title;
+    product.description = description || product.description;
+    product.category = category || product.category;
+    product.images = images || product.images;
+    product.price = price || product.price;
+
+    const updatedProduct = await product.save();
 
     res.status(200).json({
       success: true,
       message: "Product updated successfully",
-      product: product,
+      product: updatedProduct,
     });
   } catch (error) {
     console.error("Something went wrong!", error);
@@ -113,14 +117,16 @@ const deleteProduct = async (req, res) => {
     if (!product) {
       res.status(404).json({
         success: false,
-        message: `product with this ${id} is not found`,
+        message: `product with this ${product} is not found`,
       });
     }
+
+    const deletedProduct = await product.save();
 
     res.status(200).json({
       sucess: true,
       message: "Product deleted successfully!",
-      product: product,
+      product: deletedProduct,
     });
   } catch (error) {
     console.error("Something went wrong!", error);
