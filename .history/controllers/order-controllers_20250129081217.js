@@ -17,6 +17,15 @@ const placeOrder = async (req, res) => {
       });
     }
 
+    const product = await Product.findOne({ userId });
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+    }
+
     const order = new Order({
       userId,
       items: userCart.items.map((item) => ({
@@ -29,19 +38,14 @@ const placeOrder = async (req, res) => {
 
     await order.save();
 
-    for (const item of userCart.items) {
-      const product = await Product.findOne(item.productId);
-
-      product.stock -= item.quantity;
-      product.salesCount += item.quantity;
-
-      await product.save();
-    }
-
     userCart.items = [];
     userCart.totalPrice = 0;
 
     await userCart.save();
+
+    product.stock -= order.items.quantity;
+
+    await product.save();
 
     res.status(200).json({
       success: true,

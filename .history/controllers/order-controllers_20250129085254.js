@@ -29,6 +29,11 @@ const placeOrder = async (req, res) => {
 
     await order.save();
 
+    userCart.items = [];
+    userCart.totalPrice = 0;
+
+    await userCart.save();
+
     for (const item of userCart.items) {
       const product = await Product.findOne(item.productId);
 
@@ -37,11 +42,6 @@ const placeOrder = async (req, res) => {
 
       await product.save();
     }
-
-    userCart.items = [];
-    userCart.totalPrice = 0;
-
-    await userCart.save();
 
     res.status(200).json({
       success: true,
