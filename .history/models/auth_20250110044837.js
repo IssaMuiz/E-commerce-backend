@@ -20,6 +20,24 @@ const UserSchema = new mongoose.Schema({
     default: "customer",
     required: true,
   },
+
+  cart: {
+    type: Array,
+    default: [],
+  },
+  Address: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Address",
+    },
+  ],
+
+  wishlist: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Products",
+    },
+  ],
 });
 
 module.exports = mongoose.model("User", UserSchema);

@@ -3,7 +3,6 @@ const express = require("express");
 const authRoutes = require("./routes/auth-routes");
 const productsRoutes = require("./routes/product-routes");
 const orderRoutes = require("./routes/order-routes");
-const cartRoutes = require("./routes/cart-routes");
 const connectToDB = require("./config/db");
 
 const app = express();
@@ -17,7 +16,6 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productsRoutes);
 app.use("/api/order", orderRoutes);
-app.use("/api/cart", cartRoutes);
 
 // connect to database
 connectToDB();

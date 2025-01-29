@@ -32,10 +32,10 @@ const addProduct = async (req, res) => {
 const fetchProducts = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 5;
+    const limit = parseInt(req.query.limit) || 1;
     const skip = (page - 1) / limit;
 
-    const sortBy = req.query.sortBy || "high-to-low";
+    const sortBy = req.query.sortBy || "bestSeller";
     const totalProducts = await Products.countDocuments();
     const totalPage = Math.ceil(totalProducts / limit);
 

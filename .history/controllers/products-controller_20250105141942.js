@@ -10,7 +10,6 @@ const addProduct = async (req, res) => {
       category,
       images,
       price,
-      stock,
     });
 
     await product.save();
@@ -32,28 +31,21 @@ const addProduct = async (req, res) => {
 const fetchProducts = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 5;
+    const limit = parseInt(req.query.limit) || 1;
     const skip = (page - 1) / limit;
 
-    const sortBy = req.query.sortBy || "high-to-low";
+    const sortBy = req.query.sortBy || "bestSeller";
     const totalProducts = await Products.countDocuments();
     const totalPage = Math.ceil(totalProducts / limit);
 
     const sort = {};
-    if (sortBy === "bestSeller") {
-      sort.salesCount = -1;
-    }
-    if (sortBy === "low-to-high") {
-      sort.price = 1;
-    }
-    if (sortBy === "high-to-low") {
-      sort.price = -1;
-    }
-    const allProducts = await Products.aggregate([
-      { $sort: sort },
-      { $skip: skip },
-      { $limit: limit },
-    ]);
+    if (sortBy === "bestSeller") sort.bestSeller = -1;
+    if (sortBy === "low-to-high") sort.price = 1;
+    if (sortBy === "high-to-low") sort.price = -1;
+    const allProducts = await Products.find()
+      .sort(sort)
+      .skip(skip)
+      .limit(limit);
 
     if (allProducts.length < 0) {
       return res.status({
@@ -83,12 +75,12 @@ const fetchProducts = async (req, res) => {
 
 const updateProduct = async (req, res) => {
   const { id } = req.params;
-  const { title, description, category, images, price, stock } = req.body;
+  const { title, description, category, images, price } = req.body;
 
   try {
     const product = await Products.findByIdAndUpdate(
       id,
-      { title, description, category, images, price, stock },
+      { title, description, category, images, price },
       { new: true }
     );
 

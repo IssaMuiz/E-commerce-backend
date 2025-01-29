@@ -12,7 +12,7 @@ const ProductSchema = new mongoose.Schema({
   },
   category: {
     type: String,
-    enum: ["Electronics", "Shoes", "Cloth", "Bag"],
+    enum: ["Electronics", "Shoes", "Shoes", "Bag"],
     require: true,
   },
 
@@ -31,12 +31,8 @@ const ProductSchema = new mongoose.Schema({
   },
   salesCount: {
     type: Number,
+    required: true,
     default: 0,
-  },
-
-  createdAt: {
-    type: Date,
-    default: Date.now,
   },
 });
 
